@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>CheckLore</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body class="theme-dark">
+
+  <!-- ВЕРХНИЙ ТУЛБАР -->
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-mark">◇</span>
+      <span class="brand-name">CheckLore</span>
+    </div>
+    <div class="tb-divider"></div>
+    <div class="board-meta" id="boardInfo">Новая доска</div>
+
+    <div class="spacer"></div>
+
+    <!-- Отмена / Возврат -->
+    <div class="tb-group">
+      <button class="tb-btn" id="btnUndo" title="Отменить (Ctrl+Z)" disabled>↶</button>
+      <button class="tb-btn" id="btnRedo" title="Вернуть (Ctrl+Y)" disabled>↷</button>
+    </div>
+
+    <div class="tb-divider"></div>
+
+    <!-- Поиск / Фильтр -->
+    <div class="tb-group">
+      <button class="tb-btn" id="btnSearch" title="Поиск по доске (Ctrl+F)">F</button>
+      <button class="tb-btn" id="btnGlobalSearch" title="Поиск по томам (Ctrl+Shift+F)">G</button>
+      <button class="tb-btn" id="btnFilter" title="Фильтры">Y</button>
+    </div>
+
+    <div class="tb-divider"></div>
+
+    <!-- Тома / Экспорт / Аналитика -->
+    <div class="tb-group">
+      <button class="tb-btn" id="btnTomeManager" title="Менеджер томов">T</button>
+      <button class="tb-btn" id="btnExportBoard" title="Экспорт доски">E</button>
+      <button class="tb-btn" id="btnExportPng" title="Экспорт в PNG">PNG</button>
+      <button class="tb-btn" id="btnAnalytics" title="Аналитика доски">A</button>
+    </div>
+
+    <div class="tb-divider"></div>
+
+    <!-- Снап -->
+    <div class="tb-group">
+      <button class="tb-btn" id="btnSnapGrid" title="Привязка к сетке 50×50">#</button>
+    </div>
+
+    <div class="tb-divider"></div>
+
+    <!-- Виды -->
+    <div class="tb-group">
+      <button class="tb-btn view-btn active" id="btnViewBoard" title="Вид: холст">Доска</button>
+      <button class="tb-btn view-btn" id="btnViewKanban" title="Вид: канбан по статусам">Канбан</button>
+      <div class="calendar-toggle-wrap">
+        <button class="tb-btn view-btn" id="btnViewCalendar" title="Календарь (ЛКМ — неделя)">Календарь</button>
+        <button class="tb-btn cal-caret" id="btnCalendarCaret" title="Выбрать режим">▾</button>
+      </div>
+    </div>
+
+    <div class="tb-divider"></div>
+
+    <!-- Зум -->
+    <div class="tb-group">
+      <button class="tb-btn" id="btnZoomOut" title="Отдалить (Ctrl+-)">−</button>
+      <span class="zoom-readout" id="zoomInfo">100%</span>
+      <button class="tb-btn" id="btnZoomIn" title="Приблизить (Ctrl+=)">+</button>
+      <button class="tb-btn" id="btnZoomReset" title="Сброс 100% (Ctrl+0)">1:1</button>
+      <button class="tb-btn" id="btnFit" title="Вписать (Ctrl+1)">⛶</button>
+    </div>
+
+    <div class="tb-divider"></div>
+
+    <!-- Сохранить / Сервисные -->
+    <div class="tb-group">
+      <button class="tb-btn accent" id="btnSaveBoard" title="Сохранить (Ctrl+S)">Сохранить</button>
+      <button class="tb-btn" id="btnSwitchBoard" title="Выбрать другую доску">D</button>
+      <button class="tb-btn" id="btnSettings" title="Настройки">≡</button>
+      <button class="tb-btn" id="btnHelp" title="Справка (F1)">?</button>
+      <button class="tb-btn theme" id="btnTheme" title="Сменить тему">◐</button>
+    </div>
+
+    <div class="window-controls">
+      <button class="wc-btn" id="wcMinimize" title="Свернуть">–</button>
+      <button class="wc-btn" id="wcMaximize" title="Развернуть">□</button>
+      <button class="wc-btn wc-close" id="wcClose" title="Закрыть">✕</button>
+    </div>
+  </header>
+
+  <!-- МЕНЮ -->
+  <nav class="menubar" id="menubar">
+    <div class="menu-item" data-menu="file">
+      <span class="menu-label">Карточка</span>
+      <div class="menu-dropdown">
+        <button data-action="new-note">Создать заметку</button>
+        <button data-action="new-paragraph">Создать абзац</button>
+        <button data-action="new-tome">Создать том</button>
+        <button data-action="new-link">Создать ссылку</button>
+        <div class="menu-sep"></div>
+        <button data-action="new-image">Добавить изображение</button>
+      </div>
+    </div>
+    <div class="menu-item" data-menu="file">
+      <span class="menu-label">Файл</span>
+      <div class="menu-dropdown">
+        <button data-action="save">Сохранить доску</button>
+        <button data-action="export-board">Экспорт доски (JSON)</button>
+        <button data-action="export-png">Экспорт в PNG</button>
+        <div class="menu-sep"></div>
+        <button data-action="tome-manager">Менеджер томов</button>
+        <button data-action="browse-boards">Обзор досок</button>
+        <div class="menu-sep"></div>
+        <button data-action="settings">Настройки</button>
+        <div class="menu-sep"></div>
+        <button data-action="quit">Выход</button>
+      </div>
+    </div>
+    <div class="menu-item" data-menu="edit">
+      <span class="menu-label">Правка</span>
+      <div class="menu-dropdown">
+        <button data-action="undo">Отменить</button>
+        <button data-action="redo">Вернуть</button>
+        <div class="menu-sep"></div>
+        <button data-action="copy">Копировать</button>
+        <button data-action="paste">Вставить</button>
+        <button data-action="duplicate">Дублировать</button>
+        <button data-action="select-all">Выделить всё</button>
+        <div class="menu-sep"></div>
+        <button data-action="delete">Удалить выделенное</button>
+      </div>
+    </div>
+    <div class="menu-item" data-menu="view">
+      <span class="menu-label">Вид</span>
+      <div class="menu-dropdown">
+        <button data-action="zoom-in">Приблизить</button>
+        <button data-action="zoom-out">Отдалить</button>
+        <button data-action="zoom-100">Масштаб 100%</button>
+        <button data-action="fit">Вписать доску</button>
+        <div class="menu-sep"></div>
+        <button data-action="view-board">Режим: Доска</button>
+        <button data-action="view-kanban">Режим: Канбан</button>
+        <button data-action="view-calendar">Режим: Календарь</button>
+        <div class="menu-sep"></div>
+        <button data-action="snap-off">Снап: Свободно</button>
+        <button data-action="snap-grid">Снап: Сетка 50×50</button>
+        <button data-action="snap-board">Снап: Магнит к карточкам</button>
+        <div class="menu-sep"></div>
+        <button data-action="toggle-theme">Сменить тему</button>
+      </div>
+    </div>
+    <div class="menu-item" data-menu="window">
+      <span class="menu-label">Окно</span>
+      <div class="menu-dropdown">
+        <button data-action="win-minimize">Свернуть</button>
+        <button data-action="win-maximize">Развернуть / Восстановить</button>
+        <div class="menu-sep"></div>
+        <button data-action="win-close">Закрыть</button>
+      </div>
+    </div>
+    <div class="menu-item" data-menu="help">
+      <span class="menu-label">Справка</span>
+      <div class="menu-dropdown">
+        <button data-action="help">Горячие клавиши</button>
+        <button data-action="tutorial">Подробный туториал</button>
+        <div class="menu-sep"></div>
+        <button data-action="analytics">Аналитика доски</button>
+        <div class="menu-sep"></div>
+        <button data-action="about">О программе</button>
+      </div>
+    </div>
+
+    <div class="menubar-spacer"></div>
+    <button class="menubar-action-btn" id="btnMenubarAddCard" title="Создать карточку">+ Карточка</button>
+  </nav>
+
+  <!-- РАБОЧЕЕ ПОЛЕ -->
+  <div class="workspace">
+
+    <!-- ЛЕВАЯ ПАНЕЛЬ ИНСТРУМЕНТОВ -->
+    <aside class="tools-panel" id="toolsPanel">
+      <button class="tool-btn active" data-tool="select"    title="Выделение (V)">V</button>
+      <button class="tool-btn"        data-tool="pan"       title="Рука / панорама (H)">H</button>
+      <button class="tool-btn"        data-tool="zoom"      title="Зум (Z)">Z</button>
+      <div class="tool-sep"></div>
+      <button class="tool-btn"        data-tool="note"      title="Заметка (N)">N</button>
+      <button class="tool-btn"        data-tool="paragraph" title="Абзац (P)">P</button>
+      <button class="tool-btn"        data-tool="tome"      title="Том (B)">B</button>
+      <button class="tool-btn"        data-tool="image"     title="Изображение (I)">I</button>
+      <button class="tool-btn"        data-tool="link"      title="Ссылка (L)">L</button>
+      <div class="tool-sep"></div>
+      <button class="tool-btn"        data-tool="frame"     title="Область (R)">R</button>
+    </aside>
+
+    <!-- ЦЕНТР: ХОЛСТ -->
+    <main class="board-viewport" id="boardViewport">
+      <div class="board" id="board"></div>
+      <div class="selection-rect" id="selectionRect"></div>
+    </main>
+
+    <!-- АЛЬТЕРНАТИВНЫЕ ВИДЫ -->
+    <div class="kanban-view" id="kanbanView"></div>
+    <div class="calendar-view" id="calendarView"></div>
+
+    <!-- ПРАВАЯ ПАНЕЛЬ СВОЙСТВ -->
+    <aside class="props-panel" id="propsPanel">
+      <div class="props-header">Свойства</div>
+      <div class="props-body">
+        <div class="props-empty" id="propsEmpty">
+          <div class="props-empty-text">Ничего не выбрано</div>
+          <div class="props-empty-sub">Выделите карточку на доске, чтобы увидеть её параметры</div>
+        </div>
+        <div class="props-content" id="propsContent" style="display:none"></div>
+      </div>
+    </aside>
+  </div>
+
+  <!-- ПАНЕЛЬ ПОИСКА -->
+  <div class="search-bar" id="searchBar">
+    <span class="bar-label">Поиск</span>
+    <input id="searchInput" type="text" placeholder="Что искать..." autocomplete="off">
+    <span class="search-counter" id="searchCounter">0/0</span>
+    <button class="tb-btn" id="btnSearchPrev" title="Предыдущее (Shift+Enter)">↑</button>
+    <button class="tb-btn" id="btnSearchNext" title="Следующее (Enter)">↓</button>
+    <button class="tb-btn" id="btnSearchClose" title="Закрыть (Esc)">✕</button>
+  </div>
+
+  <!-- ПАНЕЛЬ ФИЛЬТРОВ -->
+  <div class="filter-bar" id="filterBar">
+    <span class="bar-label">Фильтр</span>
+    <select id="filterType" class="filter-select">
+      <option value="">Все типы</option>
+      <option value="note">Заметки</option>
+      <option value="paragraph">Абзацы</option>
+      <option value="tome">Тома</option>
+      <option value="image">Картинки</option>
+      <option value="link">Ссылки</option>
+    </select>
+    <select id="filterTag" class="filter-select"><option value="">Все теги</option></select>
+    <select id="filterAuthor" class="filter-select"><option value="">Все авторы</option></select>
+    <select id="filterDeadline" class="filter-select">
+      <option value="">Все сроки</option>
+      <option value="overdue">Просроченные</option>
+      <option value="today">Сегодня</option>
+      <option value="week">Эта неделя</option>
+      <option value="nodeadline">Без срока</option>
+    </select>
+    <div class="spacer"></div>
+    <span class="filter-counter" id="filterCounter"></span>
+    <button class="tb-btn" id="btnFilterClear">Сбросить</button>
+    <button class="tb-btn" id="btnFilterClose">✕</button>
+  </div>
+
+  <!-- КОНТЕКСТНОЕ МЕНЮ -->
+  <div class="context-menu" id="contextMenu"></div>
+
+  <!-- МОДАЛКА -->
+  <div class="modal-backdrop" id="modalBackdrop">
+    <div class="modal" id="modal"></div>
+  </div>
+
+  <!-- СПРАВКА -->
+  <div class="help-overlay" id="helpOverlay">
+    <div class="help-box">
+      <h1>Горячие клавиши CheckLore</h1>
+      <div class="help-cols">
+        <div>
+          <h2>Файл и доска</h2>
+          <div class="hk"><kbd>Ctrl</kbd>+<kbd>S</kbd><span>Сохранить доску</span></div>
+          <div class="hk"><kbd>Ctrl</kbd>+<kbd>Z</kbd><span>Отменить действие</span></div>
+          <div class="hk"><kbd>Ctrl</kbd>+<kbd>Y</kbd><span>Вернуть действие</span></div>
+          <div class="hk"><kbd>Ctrl</kbd>+<kbd>A</kbd><span>Выделить всё</span></div>
+          <div class="hk"><kbd>Ctrl</kbd>+<kbd>C</kbd><span>Копировать выделенное</span></div>
+          <div class="hk"><kbd>Ctrl</kbd>+<kbd>V</kbd><span>Вставить</span></div>
+          <div class="hk"><kbd>Ctrl</kbd>+<kbd>D</kbd><span>Дублировать</span></div>
+          <div class="hk"><kbd>Del</kbd><span>Удалить выделенное</span></div>
+          <div class="hk"><kbd>Esc</kbd><span>Снять выделение / закрыть меню</span></div>
+        </div>
+        <div>
+          <h2>Инструменты (левая панель)</h2>
+          <div class="hk"><kbd>V</kbd><span>Выделение</span></div>
+          <div class="hk"><kbd>H</kbd><span>Рука / панорама</span></div>
+          <div class="hk"><kbd>Z</kbd><span>Зум: ЛКМ — приблизить, ПКМ — отдалить</span></div>
+          <div class="hk"><kbd>N</kbd><span>Новая заметка</span></div>
+          <div class="hk"><kbd>P</kbd><span>Новый абзац</span></div>
+          <div class="hk"><kbd>B</kbd><span>Новый том</span></div>
+          <div class="hk"><kbd>I</kbd><span>Новая картинка (диалог сразу)</span></div>
+          <div class="hk"><kbd>L</kbd><span>Новая ссылка</span></div>
+          <div class="hk"><kbd>R</kbd><span>Новая область (тянуть мышью)</span></div>
+        </div>
+        <div>
+          <h2>Навигация</h2>
+          <div class="hk"><kbd>Ctrl</kbd>+колесо<span>Зум вокруг курсора</span></div>
+          <div class="hk"><kbd>Сред.кн.</kbd><span>Панорама доски</span></div>
+          <div class="hk"><kbd>Ctrl</kbd>+<kbd>0</kbd><span>Масштаб 100%</span></div>
+          <div class="hk"><kbd>Ctrl</kbd>+<kbd>1</kbd><span>Полный обзор — вся доска на экране</span></div>
+          <div class="hk"><kbd>Ctrl</kbd>+<kbd>+</kbd><span>Приблизить</span></div>
+          <div class="hk"><kbd>Ctrl</kbd>+<kbd>−</kbd><span>Отдалить</span></div>
+          <div class="hk"><kbd>F1</kbd><span>Эта справка</span></div>
+          <div class="hk"><kbd>F12</kbd><span>DevTools (для отладки)</span></div>
+        </div>
+        <div>
+          <h2>Поиск, фильтры, режимы</h2>
+          <div class="hk"><kbd>Ctrl</kbd>+<kbd>F</kbd><span>Поиск по доске</span></div>
+          <div class="hk"><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>F</kbd><span>Поиск по всем томам</span></div>
+          <div class="hk"><kbd>Y</kbd><span>Фильтры (тег, автор, срок)</span></div>
+          <div class="hk"><kbd>G</kbd><span>Глобальный поиск по томам</span></div>
+          <div class="hk"><kbd>F</kbd><span>Поиск по доске</span></div>
+          <div class="hk"><kbd>T</kbd><span>Менеджер томов</span></div>
+          <div class="hk"><kbd>E</kbd><span>Экспорт доски (JSON)</span></div>
+          <div class="hk"><kbd>PNG</kbd><span>Экспорт доски в PNG</span></div>
+          <div class="hk"><kbd>A</kbd><span>Аналитика доски</span></div>
+          <div class="hk"><kbd>#</kbd><span>Снап: Свободно / Сетка / Магнит</span></div>
+        </div>
+      </div>
+      <div class="help-footer">
+        <button class="tb-btn" id="btnHelpDetailed">Подробней</button>
+        <button class="tb-btn accent" id="btnHelpClose">Закрыть</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ПОДРОБНЫЙ ТУТОРИАЛ -->
+  <div class="tutorial-overlay" id="tutorialOverlay">
+    <div class="tutorial-box">
+      <header class="tutorial-header">
+        <h1>CheckLore — подробный туториал</h1>
+        <button class="tutorial-close" id="btnTutorialClose" title="Закрыть">✕</button>
+      </header>
+      <div class="tutorial-body" id="tutorialBody">
+
+        <section>
+          <h2>Что такое CheckLore</h2>
+          <p>CheckLore — визуальная доска и текстовый редактор, созданный для упрощения работы за компьютером и распределения задач. Вся работа ведётся в одном окне: доска, канбан, календарь, редактор больших текстов, менеджер томов, аналитика.</p>
+          <p>Все данные хранятся локально на вашем компьютере. Ничего не отправляется в интернет.</p>
+        </section>
+
+        <section>
+          <h2>Доска</h2>
+          <p>Основное рабочее пространство. Здесь располагаются карточки пяти типов: <b>заметка</b>, <b>абзац</b>, <b>том</b>, <b>картинка</b> и <b>ссылка</b>. Доска — это визуальный навигатор по проекту.</p>
+          <ul>
+            <li><b>ПКМ по пустому месту</b> — открыть меню создания.</li>
+            <li><b>Двойной клик по карточке</b> — открыть её редактор (тома — в отдельном окне).</li>
+            <li><b>Перетаскивание</b> — схватил карточку и тянешь. Плавно, без рывков.</li>
+            <li><b>Ресайз</b> — за правый нижний угол карточки.</li>
+            <li><b>Shift + клик</b> — добавить карточку в выделение.</li>
+            <li><b>Ctrl + клик</b> — создать связь с выделенной (якорь).</li>
+            <li><b>Ctrl + Shift + клик</b> — накидать несколько связей от одного якоря.</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>Типы карточек</h2>
+          <ul>
+            <li><b>Заметка</b> — небольшой текстовый блок. Заголовок, текст, статус, автор, срок, тег, вложения.</li>
+            <li><b>Абзац</b> — текстовый блок среднего размера (до 1000 символов). Для описания локаций, механик, персонажей.</li>
+            <li><b>Том</b> — большая статья. Хранится как отдельный файл. Открывается в отдельном окне редактора при двойном клике.</li>
+            <li><b>Картинка</b> — референс, арт, скриншот.</li>
+            <li><b>Ссылка</b> — веб-ссылка. Двойной клик открывает браузер.</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>Зум и панорама</h2>
+          <ul>
+            <li><b>Ctrl + колесо мыши</b> — зум вокруг курсора.</li>
+            <li><b>Средняя кнопка мыши</b> (зажать и тащить) — панорама. Также инструмент <b>H</b> и перетаскивание ЛКМ.</li>
+            <li><b>Ctrl + 0</b> — сброс масштаба к 100%.</li>
+            <li><b>Ctrl + 1</b> — полный обзор: вся доска помещается на экран.</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>Режимы просмотра</h2>
+          <p>Три режима переключаются кнопками в топбаре:</p>
+          <ul>
+            <li><b>Доска</b> — визуальный холст со всеми карточками.</li>
+            <li><b>Канбан</b> — колонки по статусам. Только заметки. Карточку можно перетаскивать между колонками — статус меняется автоматически. Кнопка «+ Карточка» в полосе меню (видна только в канбане).</li>
+            <li><b>Календарь</b> — неделя или месяц. Показывает карточки с указанным сроком. Стрелки ← → листают, «Сегодня» — прыжок к текущему дню.</li>
+          </ul>
+          <p>Переключить режим календаря (неделя/месяц): клик по стрелочке ▾ рядом с кнопкой «Календарь», ПКМ по кнопке или табам внутри календаря.</p>
+        </section>
+
+        <section>
+          <h2>Статусы (для канбана)</h2>
+          <p>Стандартные: <b>TODO</b>, <b>В работе</b>, <b>Готово</b>, <b>Отменено</b>. Можно создать свои статусы.</p>
+          <ul>
+            <li>В канбане — <b>«+ Добавить статус»</b> в конце списка колонок.</li>
+            <li><b>ПКМ по шапке кастомной колонки</b> — переименовать, изменить цвет, удалить.</li>
+            <li>Изменение статуса заметки — ПКМ по карточке → «Статус…».</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>Связи между карточками</h2>
+          <ul>
+            <li><b>Ctrl + клик</b> по двум карточкам — создать связь.</li>
+            <li><b>Повторный Ctrl + клик</b> по связанной — связь удаляется.</li>
+            <li><b>Клик по линии</b> — предложение удалить связь.</li>
+            <li><b>ПКМ по карточке → «Отвязать от…»</b> — список всех связей с возможностью удалить по одной или все сразу.</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>Области</h2>
+          <p>Прямоугольники с названием, которые двигают группу карточек внутри себя. Как папки на доске.</p>
+          <ul>
+            <li><b>R</b> или ПКМ по пустому месту → «Создать область» → протянуть мышью прямоугольник.</li>
+            <li><b>Двойной клик по шапке</b> — переименовать.</li>
+            <li><b>Кнопка ▼/▶</b> — свернуть или развернуть область.</li>
+            <li><b>ПКМ по шапке</b> — цвет, переименование, удаление.</li>
+            <li>Карточки внутри области едут вместе с ней.</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>Вложения</h2>
+          <p>К заметке, абзацу или тому можно прикрепить картинки и ссылки.</p>
+          <ul>
+            <li>Открой заметку/абзац на редактирование — внизу формы секция «Вложения».</li>
+            <li><b>«+ Изображение»</b> — открывает проводник, копирует файл в папку workspace.</li>
+            <li><b>«+ Ссылка»</b> — раскрывает поля URL и Название.</li>
+            <li>Клик по миниатюре или чипу — открывает файл или ссылку.</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>Прозрачность карточек</h2>
+          <ul>
+            <li><b>ПКМ по карточке → «Прозрачность»</b> — ползунок 20–100% только для этой карточки.</li>
+            <li><b>Настройки → Внешний вид → «Прозрачность карточек»</b> — значение по умолчанию для новых карточек.</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>Поиск и фильтры</h2>
+          <ul>
+            <li><b>Ctrl + F</b> — поиск по доске. Enter — следующее, Shift+Enter — предыдущее, Esc — закрыть.</li>
+            <li><b>Ctrl + Shift + F</b> — глобальный поиск по всем томам сразу.</li>
+            <li><b>Y</b> или кнопка «Фильтры» — тип, тег, автор, срок. Не подходящие карточки тускнеют.</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>Менеджер томов</h2>
+          <p><b>T</b> в топбаре. Список всех томов: имя, дата, размер, к каким доскам привязан. Можно открыть, переименовать, экспортировать в .md или удалить. Осиротевшие тома подсвечены оранжевым.</p>
+        </section>
+
+        <section>
+          <h2>Редактор томов</h2>
+          <p>Отдельное окно. Здесь можно писать длинные тексты с форматированием:</p>
+          <ul>
+            <li>Шрифты: Segoe UI, Arial, Georgia, Times New Roman, Courier New, Verdana и др.</li>
+            <li>Размеры: от мелкого до заголовка+.</li>
+            <li>Жирный, курсив, подчёркнутый, зачёркнутый.</li>
+            <li>Выравнивание слева / по центру / справа.</li>
+            <li>Списки маркированный и нумерованный.</li>
+            <li>Цвет текста и маркер (жёлтый).</li>
+          </ul>
+          <p>Автосохранение настраивается в Настройках. Ручное — <b>Ctrl+S</b> или кнопка «Сохранить». Экспорт в .md / .txt / .html — кнопка «Экспорт».</p>
+        </section>
+
+        <section>
+          <h2>Экспорт и импорт</h2>
+          <ul>
+            <li><b>E</b> — экспорт всей доски в JSON-файл.</li>
+            <li><b>PNG</b> — снимок доски в картинку (2× разрешение).</li>
+            <li>В Обзоре досок — <b>«Открыть из…»</b> — импорт доски из JSON.</li>
+            <li>В Менеджере томов — экспорт тома в .md / .txt / .html.</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>Несколько досок</h2>
+          <p>CheckLore поддерживает несколько досок. <b>D</b> в топбаре открывает обзор всех досок: переключение, создание новой, переименование, удаление, импорт из файла.</p>
+        </section>
+
+        <section>
+          <h2>Спящие карточки</h2>
+          <p>Если перетащить карточку за пределы доски — она становится полупрозрачной и «спит»: не открывается, не учитывается в аналитике, связи к ней тускнеют. Вернуть: ПКМ по ней → «Вернуть на доску», либо ПКМ по пустому месту доски → «Вернуть все спящие карточки».</p>
+        </section>
+
+        <section>
+          <h2>Аналитика доски</h2>
+          <p><b>A</b> в топбаре. Показывает: состав доски по типам карточек, статусы заметок, дедлайны (просрочено / сегодня / эта неделя), топ-5 авторов, топ-5 тегов, количество связей и скрытых.</p>
+        </section>
+
+        <section>
+          <h2>Настройки</h2>
+          <p><b>≡</b> в топбаре или Меню → Файл → Настройки.</p>
+          <ul>
+            <li><b>Цвет линий связи</b> — цвет пунктира между карточками.</li>
+            <li><b>Прозрачность карточек</b> — по умолчанию для новых.</li>
+            <li><b>Приветственный экран</b> — что показывать при запуске: меню создания или сразу последнюю доску.</li>
+            <li><b>Автосохранение томов</b> — от 1 минуты до 3 часов, или «Никогда».</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>Горячие клавиши — полный список</h2>
+          <p>Откройте окно справки по <b>F1</b> — там сводная таблица всех сочетаний.</p>
+        </section>
+
+        <section>
+          <h2>Советы</h2>
+          <ul>
+            <li>Используйте <b>Области</b>, чтобы группировать карточки по проектам или спринтам.</li>
+            <li>Связи (<b>Ctrl + клик</b>) помогают видеть, что на что влияет.</li>
+            <li>Переключение вида <b>Доска / Канбан / Календарь</b> — разные взгляды на одни и те же данные.</li>
+            <li>Доска — визуальный навигатор. Длинные тексты держите в <b>томах</b>.</li>
+          </ul>
+        </section>
+
+      </div>
+    </div>
+  </div>
+  <!-- АНАЛИТИКА -->
+  <div class="analytics-overlay" id="analyticsOverlay">
+    <div class="analytics-box">
+      <h1>Аналитика доски</h1>
+      <div class="analytics-content" id="analyticsContent"></div>
+      <div class="analytics-footer">
+        <button class="tb-btn accent" id="btnAnalyticsClose">Закрыть</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ПРИВЕТСТВИЕ -->
+  <div class="welcome-overlay" id="welcomeOverlay">
+    <div class="welcome-window-controls">
+      <button class="wc-btn" id="welcomeMinimize" title="Свернуть">–</button>
+      <button class="wc-btn" id="welcomeMaximize" title="Развернуть">□</button>
+      <button class="wc-btn wc-close" id="welcomeClose" title="Закрыть">✕</button>
+    </div>
+    <div class="welcome-box">
+      <div class="welcome-mark">◇</div>
+      <h1>CheckLore</h1>
+      <p class="welcome-sub">Визуальная доска</p>
+      <div class="welcome-actions">
+        <button class="tb-btn accent welcome-btn" id="btnCreateBoard">Создать доску</button>
+        <button class="tb-btn welcome-btn" id="btnBrowseBoards">Обзор досок</button>
+        <button class="tb-btn welcome-btn" id="btnResumeLast">Продолжить с последней</button>
+      </div>
+      <button class="welcome-theme-btn" id="btnWelcomeTheme">Перейти на светлое оформление</button>
+    </div>
+  </div>
+
+  <script src="../node_modules/html-to-image/dist/html-to-image.js"></script>
+  <script src="renderer.js"></script>
+</body>
+</html>

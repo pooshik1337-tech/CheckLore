@@ -1,0 +1,48 @@
+{
+  "name": "checklore",
+  "version": "1.0.0",
+  "description": "CheckLore — визуальная доска и текстовый редактор для инди-команд",
+  "main": "main.js",
+  "author": "CheckLore Team",
+  "license": "MIT",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder --win",
+    "build:portable": "electron-builder --win portable"
+  },
+  "dependencies": {
+    "html-to-image": "^1.11.11"
+  },
+  "devDependencies": {
+    "electron": "^30.5.1",
+    "electron-builder": "^24.13.3"
+  },
+  "build": {
+    "appId": "com.checklore.app",
+    "productName": "CheckLore",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "renderer/**/*",
+      "node_modules/html-to-image/dist/html-to-image.js",
+      "package.json"
+    ],
+"win": {
+  "icon": "build/icon.ico",
+  "target": [
+    { "target": "nsis", "arch": ["x64"] },
+    { "target": "portable", "arch": ["x64"] }
+  ]
+},
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "CheckLore"
+    }
+  }
+}

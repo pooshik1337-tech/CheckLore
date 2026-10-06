@@ -1,0 +1,224 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>CheckLore — Настройки</title>
+<link rel="stylesheet" href="styles.css">
+<style>
+  body.settings-body {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    background: var(--bg);
+    color: var(--text);
+    margin: 0;
+  }
+  .settings-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 20px;
+    background: var(--panel);
+    border-bottom: 1px solid var(--border);
+    -webkit-app-region: drag;
+  }
+  .settings-header h1 {
+    flex: 1;
+    margin: 0;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: .5px;
+    -webkit-app-region: no-drag;
+  }
+  .settings-header .window-controls {
+    -webkit-app-region: no-drag;
+  }
+  .settings-content { flex: 1; overflow: auto; padding: 16px 20px; }
+  .settings-section {
+    background: var(--panel);
+    border: 1px solid var(--border-soft);
+    border-radius: 4px;
+    padding: 12px 16px;
+  }
+  .settings-section + .settings-section { margin-top: 12px; }
+  .settings-section h2 {
+    margin: 0 0 10px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .8px;
+    color: var(--text-dim);
+  }
+  .setting-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 9px 0;
+  }
+  .setting-row + .setting-row { border-top: 1px solid var(--border-soft); }
+  .setting-label { font-size: 12px; }
+  .setting-label small {
+    display: block;
+    color: var(--text-dim);
+    font-size: 10px;
+    margin-top: 2px;
+  }
+  .setting-control select {
+    background: var(--panel-3);
+    color: var(--text);
+    border: 1px solid var(--border-soft);
+    border-radius: 3px;
+    padding: 5px 10px;
+    font-size: 12px;
+    font-family: inherit;
+    cursor: pointer;
+    min-width: 170px;
+  }
+  .setting-control select:focus { outline: none; border-color: var(--accent); }
+
+  .setting-control-wide {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 220px;
+  }
+  .setting-control-wide input[type=range] {
+    flex: 1;
+    accent-color: var(--accent);
+    cursor: pointer;
+    height: 6px;
+  }
+  .setting-value {
+    min-width: 44px;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+    font-size: 12px;
+    color: var(--text);
+  }
+
+  .setting-control input[type=color],
+  #linkColorPicker {
+    -webkit-appearance: none !important;
+    appearance: none !important;
+    width: 40px !important;
+    height: 26px !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    background: transparent !important;
+    border: 0 !important;
+    outline: 0 !important;
+    box-shadow: none !important;
+    border-radius: 4px !important;
+    cursor: pointer;
+    overflow: hidden;
+    display: block;
+  }
+  .setting-control input[type=color]::-webkit-color-swatch-wrapper,
+  #linkColorPicker::-webkit-color-swatch-wrapper {
+    padding: 0 !important;
+    margin: 0 !important;
+    border: 0 !important;
+    background: transparent !important;
+    border-radius: 4px;
+  }
+  .setting-control input[type=color]::-webkit-color-swatch,
+  #linkColorPicker::-webkit-color-swatch {
+    border: 0 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    border-radius: 4px !important;
+  }
+
+  .settings-footer {
+    padding: 10px 20px;
+    background: var(--panel);
+    border-top: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .settings-status { flex: 1; color: var(--text-dim); font-size: 11px; }
+</style>
+</head>
+<body class="theme-dark settings-body">
+  <div class="settings-header">
+    <h1>Настройки CheckLore</h1>
+    <div class="window-controls">
+      <button class="wc-btn" id="wcMinimize" title="Свернуть">–</button>
+      <button class="wc-btn" id="wcMaximize" title="Развернуть">□</button>
+      <button class="wc-btn wc-close" id="wcClose" title="Закрыть">✕</button>
+    </div>
+  </div>
+
+  <div class="settings-content">
+    <div class="settings-section">
+      <h2>Внешний вид</h2>
+      <div class="setting-row">
+        <div class="setting-label">
+          Цвет линий связи
+          <small>Пунктирные линии между карточками</small>
+        </div>
+        <div class="setting-control">
+          <input type="color" id="linkColorPicker" value="#4c8dff">
+        </div>
+      </div>
+      <div class="setting-row">
+        <div class="setting-label">
+          Прозрачность карточек
+          <small>По умолчанию для новых карточек</small>
+        </div>
+        <div class="setting-control setting-control-wide">
+          <input type="range" id="defaultOpacity" min="20" max="100" step="1" value="85">
+          <span class="setting-value" id="defaultOpacityValue">85%</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="settings-section">
+      <h2>Общие</h2>
+      <div class="setting-row">
+        <div class="setting-label">
+          Приветственный экран
+          <small>Что показывать при запуске CheckLore</small>
+        </div>
+        <div class="setting-control">
+          <select id="welcomeSelect">
+            <option value="menu">Меню создания</option>
+            <option value="last">Последняя доска</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="settings-section">
+      <h2>Текстовые тома</h2>
+      <div class="setting-row">
+        <div class="setting-label">
+          Автосохранение текстового тома
+          <small>Как часто сохранять открытый том автоматически</small>
+        </div>
+        <div class="setting-control">
+          <select id="autosaveSelect">
+            <option value="1">1 минута</option>
+            <option value="3">3 минуты</option>
+            <option value="5">5 минут</option>
+            <option value="10">10 минут</option>
+            <option value="30">30 минут</option>
+            <option value="60">1 час</option>
+            <option value="180">3 часа</option>
+            <option value="0">Никогда</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="settings-footer">
+    <span class="settings-status" id="status"></span>
+    <button class="btn" id="btnClose">Закрыть</button>
+  </div>
+
+  <script src="settings.js"></script>
+</body>
+</html>

@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>CheckLore — Том</title>
+<link rel="stylesheet" href="styles.css">
+<style>
+  body.editor-body { display: flex; flex-direction: column; height: 100vh; }
+  .editor-topbar { gap: 10px; }
+  .title-input {
+    background: var(--panel-2); color: var(--text);
+    border: 1px solid var(--border); border-radius: 8px;
+    padding: 6px 10px; font-size: 15px; font-weight: 600;
+    min-width: 320px; user-select: text;
+  }
+  .status { color: var(--text-dim); font-size: 12px; }
+  .toolbar {
+    display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+    padding: 8px 12px;
+    background: var(--panel);
+    border-bottom: 1px solid var(--border);
+  }
+  .toolbar button, .toolbar select, .toolbar input[type=color] {
+    background: var(--panel-2); color: var(--text);
+    border: 1px solid var(--border); border-radius: 6px;
+    padding: 5px 8px; font-size: 13px; cursor: pointer;
+    min-width: 32px;
+  }
+  .toolbar button:hover { background: var(--border); }
+  .toolbar input[type=color] { padding: 2px; width: 36px; height: 30px; }
+  .editor-wrap { flex: 1; overflow: auto; padding: 24px; background: var(--bg); }
+  .editor {
+    max-width: 900px; margin: 0 auto;
+    background: var(--panel);
+    border: 1px solid var(--border); border-radius: 12px;
+    padding: 32px 40px; min-height: 100%;
+    color: var(--text); font-size: 15px; line-height: 1.6;
+    outline: none; user-select: text;
+    box-shadow: var(--shadow);
+  }
+  .editor:focus { border-color: var(--accent); }
+
+  .editor-topbar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    -webkit-app-region: drag;
+  }
+  .editor-topbar .title-input,
+  .editor-topbar .status,
+  .editor-topbar .btn,
+  .editor-topbar .window-controls {
+    -webkit-app-region: no-drag;
+  }
+</style>
+</head>
+<body class="theme-dark editor-body">
+  <header class="topbar editor-topbar">
+    <input id="titleInput" class="title-input" placeholder="Название тома">
+    <div class="spacer"></div>
+    <span class="status" id="status"></span>
+<button class="btn" id="btnTheme">◐ Тема</button>
+<button class="btn primary" id="btnSave">Сохранить</button>
+
+    <div class="window-controls">
+      <button class="wc-btn" id="wcMinimize" title="Свернуть">–</button>
+      <button class="wc-btn" id="wcMaximize" title="Развернуть">□</button>
+      <button class="wc-btn wc-close" id="wcClose" title="Закрыть">✕</button>
+    </div>
+  </header>
+
+  <div class="toolbar" id="toolbar">
+    <select id="fontFamily" title="Шрифт">
+      <option value="Segoe UI">Segoe UI</option>
+      <option value="Arial">Arial</option>
+      <option value="Georgia">Georgia</option>
+      <option value="Times New Roman">Times New Roman</option>
+      <option value="Courier New">Courier New</option>
+      <option value="Verdana">Verdana</option>
+      <option value="Comic Sans MS">Comic Sans MS</option>
+      <option value="Consolas">Consolas</option>
+    </select>
+
+    <select id="fontSize" title="Размер">
+      <option value="1">Мелкий</option>
+      <option value="3" selected>Обычный</option>
+      <option value="4">Средний+</option>
+      <option value="5">Крупный</option>
+      <option value="6">Заголовок</option>
+      <option value="7">Заголовок+</option>
+    </select>
+
+    <button data-cmd="bold" title="Жирный"><b>B</b></button>
+    <button data-cmd="italic" title="Курсив"><i>I</i></button>
+    <button data-cmd="underline" title="Подчёркнутый"><u>U</u></button>
+    <button data-cmd="strikeThrough" title="Зачёркнутый"><s>S</s></button>
+    <button data-cmd="justifyLeft" title="По левому краю">⯇</button>
+    <button data-cmd="justifyCenter" title="По центру">≡</button>
+    <button data-cmd="justifyRight" title="По правому краю">⯈</button>
+    <button data-cmd="insertUnorderedList" title="Список">• —</button>
+    <button data-cmd="insertOrderedList" title="Нумерованный список">1.</button>
+    <button data-cmd="removeFormat" title="Очистить формат">✖</button>
+    <input type="color" id="colorPicker" value="#e8eaed" title="Цвет текста">
+    <button id="btnHighlight" title="Маркер">🖍</button>
+  </div>
+
+  <div class="editor-wrap">
+    <div id="editor" class="editor" contenteditable="true" spellcheck="false"></div>
+  </div>
+
+  <script src="editor.js"></script>
+</body>
+</html>
