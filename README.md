@@ -42,7 +42,3 @@ npm start
 npm i -D electron-builder
 npx electron-builder --dir
 ```
-
-## Лицензия
-
-MIT — open source, как и договаривались.
